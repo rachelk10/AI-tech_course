@@ -126,6 +126,9 @@ const courseModules: Module[] = [
 ]
 
 export default function HomePage() {
+  const contactEmailAddress = "rachelshor100@gmail.com"
+  const contactMailtoHref = `mailto:${contactEmailAddress}`
+
   const [modulesCount, setModulesCount] = useState(0)
   const [projectsCount, setProjectsCount] = useState(0)
   const [graduatesCount, setGraduatesCount] = useState(0)
@@ -142,6 +145,12 @@ export default function HomePage() {
   })
   const [contactSubmitting, setContactSubmitting] = useState(false)
   const [contactFeedback, setContactFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null)
+  const [newsletterForm, setNewsletterForm] = useState({
+    name: "",
+    email: "",
+  })
+  const [newsletterSubmitting, setNewsletterSubmitting] = useState(false)
+  const [newsletterFeedback, setNewsletterFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null)
 
   const toggleModule = (moduleId: number) => {
     setOpenModules((prev) =>
@@ -181,6 +190,36 @@ export default function HomePage() {
       setContactFeedback({ type: "error", message })
     } finally {
       setContactSubmitting(false)
+    }
+  }
+
+  const handleNewsletterSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setNewsletterSubmitting(true)
+    setNewsletterFeedback(null)
+
+    try {
+      const response = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newsletterForm),
+      })
+
+      const data = await response.json().catch(() => ({}))
+
+      if (!response.ok) {
+        throw new Error(data?.message || "אירעה שגיאה בהרשמה. נסי שוב.")
+      }
+
+      setNewsletterFeedback({ type: "success", message: "נרשמת בהצלחה לעדכונים 🎉" })
+      setNewsletterForm({ name: "", email: "" })
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "אירעה שגיאה בהרשמה. נסי שוב."
+      setNewsletterFeedback({ type: "error", message })
+    } finally {
+      setNewsletterSubmitting(false)
     }
   }
 
@@ -581,11 +620,13 @@ export default function HomePage() {
 
                 <div className="space-y-4">
                   <a
-                    href="mailto:rachelshor100@gmail.com"
+                    href={contactMailtoHref}
+                    aria-label="שליחת מייל לרחל שור"
+                    title="לחצי לפתיחת הודעת מייל חדשה"
                     className="block gradient-border rounded-2xl p-4 hover:bg-secondary/30 transition-colors"
                   >
                     <p className="text-xs text-muted-foreground mb-1">מייל</p>
-                    <p className="text-foreground font-semibold break-all">rachelshor100@gmail.com</p>
+                    <p className="text-foreground font-semibold break-all">{contactEmailAddress}</p>
                   </a>
 
                   <a
@@ -686,22 +727,39 @@ export default function HomePage() {
                 <h3 className="text-2xl font-bold text-foreground mb-3">קבל עדכונים והטבות</h3>
                 <p className="text-base md:text-lg text-foreground/80 mb-5">הרשם לעדכונים על קורסים חדשים והטבות בעבוד</p>
               </div>
-              <form className="flex flex-col gap-2" onSubmit={(e) => e.preventDefault()}>
+              <form className="flex flex-col gap-2" onSubmit={handleNewsletterSubmit}>
                 <input
                   type="text"
                   placeholder="שמך"
+                  value={newsletterForm.name}
+                  onChange={(e) => setNewsletterForm((prev) => ({ ...prev, name: e.target.value }))}
                   className="px-3 py-2 rounded-lg bg-secondary/30 border border-border/50 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 transition-colors"
                   required
                 />
                 <input
                   type="email"
                   placeholder="דוא״ל אלקטרוני"
+                  value={newsletterForm.email}
+                  onChange={(e) => setNewsletterForm((prev) => ({ ...prev, email: e.target.value }))}
                   className="px-3 py-2 rounded-lg bg-secondary/30 border border-border/50 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 transition-colors"
                   required
                 />
-                <button className="px-4 py-2 rounded-lg bg-gradient-to-r from-[var(--gradient-purple)] to-[var(--gradient-pink)] text-white text-sm font-medium hover:opacity-90 transition-opacity">
-                  הרשם
+                <button
+                  type="submit"
+                  disabled={newsletterSubmitting}
+                  className="px-4 py-2 rounded-lg bg-gradient-to-r from-[var(--gradient-purple)] to-[var(--gradient-pink)] text-white text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {newsletterSubmitting ? "נרשמת..." : "הרשם"}
                 </button>
+                {newsletterFeedback && (
+                  <p
+                    className={`text-sm ${
+                      newsletterFeedback.type === "success" ? "text-emerald-400" : "text-rose-400"
+                    }`}
+                  >
+                    {newsletterFeedback.message}
+                  </p>
+                )}
               </form>
             </div>
           </div>

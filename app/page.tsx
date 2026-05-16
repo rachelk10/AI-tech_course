@@ -312,9 +312,9 @@ export default function HomePage() {
 
         <nav className="mt-2 flex items-center justify-center gap-4 px-6 text-sm text-slate-700 md:gap-8 md:px-12 md:text-base lg:px-20">
           <Link href="#hero" className="font-medium transition-colors hover:text-[var(--header-right)]">בית</Link>
-          <Link href="#overview" className="font-medium transition-colors hover:text-[var(--header-right)]">הקורס</Link>
           <Link href="#for-who" className="font-medium transition-colors hover:text-[var(--header-right)]">למי מיועד</Link>
           <Link href="#outcomes" className="font-medium transition-colors hover:text-[var(--header-right)]">מה מקבלים</Link>
+          <Link href="#how-delivered" className="font-medium transition-colors hover:text-[var(--header-right)]">מבנה הקורס</Link>
           <Link href="#content" className="font-medium transition-colors hover:text-[var(--header-right)]">תוכן הקורס</Link>
           <Link href="#about" className="font-medium transition-colors hover:text-[var(--header-right)]">אודות</Link>
           <Link href="#contact" className="font-medium transition-colors hover:text-[var(--header-right)]">צור קשר</Link>
@@ -452,11 +452,57 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ───── How Course is Delivered Section ───── */}
+      <section id="how-delivered" className="scroll-mt-[calc(8.75rem-1cm)] px-6 py-16 md:scroll-mt-[calc(11.75rem-1cm)]">
+        <div className="max-w-6xl mx-auto">
+          <div className="rounded-3xl p-8 md:p-12 bg-[#581c3e]/25 backdrop-blur-md border border-[#7d2b60]/30">
+            <h2 className="text-2xl md:text-3xl font-bold mb-8 text-foreground">כיצד הקורס מועבר?</h2>
+
+            <div className="space-y-6 text-lg leading-8 text-foreground">
+              <p className="leading-relaxed">
+                הקורס מועבר בצורה דיגיטלית באמצעות <span className="font-semibold text-primary">סרטוני לימוד מקצועיים, ברורים ומסודרים</span>, כך שניתן ללמוד בקצב אישי ובזמן שנוח לכם.
+              </p>
+
+              <div className="rounded-2xl border border-[#7d2b60]/40 bg-[#581c3e]/15 p-6">
+                <h3 className="font-bold text-lg mb-3 text-primary">מה מקבלים לאחר ההרשמה:</h3>
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-3">
+                    <span className="text-primary font-bold mt-0.5">✓</span>
+                    <span><span className="font-semibold">גישה מלאה לתכני הקורס למשך 3 שנים</span></span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="text-primary font-bold mt-0.5">✓</span>
+                    <span><span className="font-semibold">אפשרות לחזור על החומר, לתרגל ולהעמיק</span> בכל נושא לאורך הדרך</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="text-primary font-bold mt-0.5">✓</span>
+                    <span><span className="font-semibold">ליווי אישי ומענה לשאלות</span> במהלך הלמידה</span>
+                  </li>
+                </ul>
+              </div>
+
+              <p className="leading-relaxed">
+                כל זה מונגש כדי לאפשר <span className="font-semibold text-primary">הבנה אמיתית, התקדמות בטוחה וחוויית לימוד מקצועית ונעימה</span>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ───── Course Content Section ───── */}
       <section id="content" className="scroll-mt-[calc(8.75rem-1cm)] px-6 py-16 md:scroll-mt-[calc(11.75rem-1cm)]">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col lg:flex-row gap-8 items-start mb-12">
             <div className="flex-1">
+              <Button
+                asChild
+                className="mb-5 animate-pulse bg-gradient-to-r from-[var(--gradient-purple)] via-[var(--gradient-blue)] to-[var(--gradient-pink)] text-white border-0 px-8 py-7 text-lg rounded-2xl shadow-[0_12px_32px_-12px_rgba(88,28,62,0.7)] hover:animate-none hover:scale-105 transition-transform duration-300"
+              >
+                <Link href="/preview">
+                 לצפיה בסרטון לדוגמא
+                  <Play className="w-6 h-6 mr-2" />
+                </Link>
+              </Button>
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
                 <span className="gradient-text">Machine Learning</span>
                 <br />

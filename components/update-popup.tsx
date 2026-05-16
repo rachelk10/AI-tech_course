@@ -36,12 +36,28 @@ export function UpdatePopup() {
     if (!name || !email) return
 
     setIsLoading(true)
-    
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    setIsLoading(false)
+
+    try {
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email }),
+      })
+
+      if (!res.ok) {
+        const data = await res.json()
+        alert(data.message || "אירעה שגיאה. אנא נסי שוב.")
+        return
+      }
+    } catch {
+      alert("לא ניתן לשלוח את הבקשה. בדקי חיבור לאינטרנט.")
+      return
+    } finally {
+      setIsLoading(false)
+    }
+
     setIsSubmitted(true)
-    
+
     setTimeout(() => {
       handleClose()
     }, 3000)

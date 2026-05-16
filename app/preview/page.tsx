@@ -4,8 +4,8 @@ import { ArrowRight, Play, FileText } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export const metadata = {
-  title: "סרטון התרשמות — קורס AI",
-  description: "צפה בסרטון התרשמות מהקורס וגלה מה מחכה לך",
+  title: "ברוכים הבאים ל-Machine Learning",
+  description: "צפה בסרטון התרשמות קצר מהקורס",
 }
 
 export default function PreviewPage() {
@@ -28,16 +28,11 @@ export default function PreviewPage() {
 
       {/* ── Hero text ── */}
       <main className="flex flex-col items-center px-6 pt-10 pb-20 text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 mb-6 rounded-full border border-white/15 bg-white/5 text-sm text-white/70">
-          <Play className="w-3.5 h-3.5 text-pink-400" />
-          סרטון התרשמות מהקורס
-        </div>
-
-        <h1 className="text-3xl md:text-5xl font-extrabold mb-4 leading-tight">
-          תציץ לפני שמחליטים
+        <h1 className="text-3xl md:text-5xl font-extrabold mb-3 leading-tight">
+          ברוכים הבאים ל-Machine Learning!
         </h1>
         <p className="text-white/60 text-lg max-w-xl mb-12 leading-relaxed">
-          בסרטון הקצר הזה תקבלי תחושה אמיתית של סגנון ההוראה, רמת ההסבר ואיך נראים תכני הקורס.
+          סרטון התרשמות קצר
         </p>
 
         {/* ── Video player ── */}
@@ -54,15 +49,13 @@ export default function PreviewPage() {
 
         {/* ── CTA ── */}
         <div className="mt-14 flex flex-col items-center gap-4">
-          <p className="text-white/60 text-base">אהבת מה שראית? השאר פרטים ונחזור אלייך</p>
-
           <div className="flex flex-col sm:flex-row gap-3">
             <Button
               asChild
               className="bg-gradient-to-r from-[#581c3e] via-[#321332] to-[#18122b] text-white border-0 px-8 py-6 text-base rounded-2xl shadow-[0_14px_36px_-14px_rgba(88,28,62,0.8)] hover:scale-105 transition-transform duration-300"
             >
               <Link href="/#contact">
-                שלח לי את הסרטון + פרטים נוספים
+                אני רוצה להירשם
                 <FileText className="w-5 h-5 mr-2" />
               </Link>
             </Button>

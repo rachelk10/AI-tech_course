@@ -151,6 +151,7 @@ export default function HomePage() {
   })
   const [newsletterSubmitting, setNewsletterSubmitting] = useState(false)
   const [newsletterFeedback, setNewsletterFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null)
+  const [termsAccepted, setTermsAccepted] = useState(false)
 
   const toggleModule = (moduleId: number) => {
     setOpenModules((prev) =>
@@ -279,7 +280,7 @@ export default function HomePage() {
     const timeouts = [
       animateCounter(8, setModulesCount, 100),
       animateCounter(7, setProjectsCount, 200),
-      animateCounter(120, setGraduatesCount, 300),
+      animateCounter(124, setGraduatesCount, 300),
     ]
 
     return () => {
@@ -460,30 +461,15 @@ export default function HomePage() {
 
             <div className="space-y-6 text-lg leading-8 text-foreground">
               <p className="leading-relaxed">
-                הקורס מועבר בצורה דיגיטלית באמצעות <span className="font-semibold text-primary">סרטוני לימוד מקצועיים, ברורים ומסודרים</span>, כך שניתן ללמוד בקצב אישי ובזמן שנוח לכם.
+                הקורס מועבר בצורה דיגיטלית באמצעות <span className="font-semibold text-primary">סרטוני לימוד מקצועיים, ברורים ומסודרים</span>, כך שתוכל/י ללמוד בקצב אישי ובזמן שמתאים לך.
               </p>
 
               <div className="rounded-2xl border border-[#7d2b60]/40 bg-[#581c3e]/15 p-6">
-                <h3 className="font-bold text-lg mb-3 text-primary">מה מקבלים לאחר ההרשמה:</h3>
-                <ul className="space-y-3">
-                  <li className="flex items-start gap-3">
-                    <span className="text-primary font-bold mt-0.5">✓</span>
-                    <span><span className="font-semibold">גישה מלאה לתכני הקורס למשך 3 שנים</span></span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <span className="text-primary font-bold mt-0.5">✓</span>
-                    <span><span className="font-semibold">אפשרות לחזור על החומר, לתרגל ולהעמיק</span> בכל נושא לאורך הדרך</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <span className="text-primary font-bold mt-0.5">✓</span>
-                    <span><span className="font-semibold">ליווי אישי ומענה לשאלות</span> במהלך הלמידה</span>
-                  </li>
-                </ul>
+                <h3 className="font-bold text-lg mb-3 text-primary">מה מקבלים לאחר ההרשמה?</h3>
+                <p className="leading-relaxed">
+                  גישה מיידית ומלאה לכל תכני הקורס, עם אפשרות צפייה חוזרת למשך <span className="font-semibold">3 שנים</span>. הקורס מאפשר למידה בקצב אישי – לחזור על החומר, לתרגל ולהעמיק בכל נושא לאורך הדרך, בהתקדמות בטוחה וחווית לימוד מקצועית ונעימה.
+                </p>
               </div>
-
-              <p className="leading-relaxed">
-                כל זה מונגש כדי לאפשר <span className="font-semibold text-primary">הבנה אמיתית, התקדמות בטוחה וחוויית לימוד מקצועית ונעימה</span>.
-              </p>
             </div>
           </div>
         </div>
@@ -636,19 +622,18 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ───── CTA Section ───── */}
-      <section className="py-16 px-6 bg-secondary/20">
-        <div className="max-w-6xl mx-auto">
-          <div className="gradient-border rounded-3xl p-8 md:p-10 text-center">
-            <h3 className="text-2xl md:text-3xl font-bold mb-4">מוכנ/ה להתחיל?</h3>
-            <p className="text-muted-foreground mb-6">השאר פרטים ונעדכן אותך ברגע שהקורס יהיה זמין!</p>
-            <Button
-              onClick={() => setSyllabusOpen(true)}
-              className="bg-gradient-to-r from-[var(--gradient-purple)] via-[var(--gradient-blue)] to-[var(--gradient-pink)] text-white border-0 px-8 py-6 rounded-2xl text-base"
+      {/* ───── Payment Section ───── */}
+      <section id="payment" className="scroll-mt-[calc(8.75rem-1cm)] px-6 py-16 md:scroll-mt-[calc(11.75rem-1cm)]">
+        <div className="max-w-2xl mx-auto">
+          <div className="rounded-3xl p-8 md:p-12 bg-[#581c3e]/25 backdrop-blur-md border border-[#7d2b60]/30 text-center">
+            <h2 className="text-2xl md:text-3xl font-bold mb-8 text-foreground">מוכנ/ה להצטרף לקורס?</h2>
+            <a
+              href="https://pay.sumit.co.il/vunqpb/vwedot/vwedou/payment/"
+              className="inline-flex items-center justify-center gap-3 w-full px-8 py-5 rounded-2xl text-lg font-bold text-white bg-gradient-to-r from-[var(--gradient-purple)] via-[var(--gradient-blue)] to-[var(--gradient-pink)] shadow-[0_12px_32px_-12px_rgba(88,28,62,0.7)] hover:scale-105 transition-transform duration-300"
             >
-              צרפי אותי לרשימת הראשונים
-              <FileText className="w-5 h-5 mr-2" />
-            </Button>
+              מעבר לתשלום מאובטח
+              <ArrowLeft className="w-5 h-5" />
+            </a>
           </div>
         </div>
       </section>

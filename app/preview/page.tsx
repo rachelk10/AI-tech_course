@@ -1,14 +1,23 @@
+"use client"
+
 import Link from "next/link"
 import Image from "next/image"
 import { ArrowRight, Play, FileText } from "lucide-react"
 import { Button } from "@/components/ui/button"
-
-export const metadata = {
-  title: "ברוכים הבאים ל-Machine Learning",
-  description: "צפה בסרטון התרשמות קצר מהקורס",
-}
+import { useState, useRef } from "react"
 
 export default function PreviewPage() {
+  const [isPlaying, setIsPlaying] = useState(false)
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  const handlePlay = () => {
+    setIsPlaying(true)
+  }
+
+  const handlePause = () => {
+    setIsPlaying(false)
+  }
+
   return (
     <div
       dir="rtl"
@@ -36,15 +45,20 @@ export default function PreviewPage() {
         </p>
 
         {/* ── Video player ── */}
-        <div className="w-full max-w-3xl mx-auto rounded-2xl overflow-hidden shadow-[0_30px_80px_-20px_rgba(88,28,62,0.6)] border border-white/10 bg-black">
+        <div className={`w-full px-8 md:px-16 lg:px-24 transition-all duration-700 ease-out ${isPlaying ? '' : 'max-w-3xl mx-auto'}`}>
+          <div className="rounded-2xl overflow-hidden shadow-[0_30px_80px_-20px_rgba(88,28,62,0.6)] border border-white/10 bg-black transition-all duration-700 ease-out">
           <video
+            ref={videoRef}
             src="/preview.mp4"
             controls
             poster="/background.png"
-            className="w-full aspect-video object-cover"
+            className="w-full h-auto object-contain transition-all duration-700 ease-out"
+            onPlay={handlePlay}
+            onEnded={handlePause}
           >
             הדפדפן שלך אינו תומך בהפעלת וידאו.
           </video>
+          </div>
         </div>
 
         {/* ── CTA ── */}
@@ -54,10 +68,10 @@ export default function PreviewPage() {
               asChild
               className="bg-gradient-to-r from-[#581c3e] via-[#321332] to-[#18122b] text-white border-0 px-8 py-6 text-base rounded-2xl shadow-[0_14px_36px_-14px_rgba(88,28,62,0.8)] hover:scale-105 transition-transform duration-300"
             >
-              <Link href="/#contact">
+              <a href="https://pay.sumit.co.il/vunqpb/vwedot/vwedou/payment/">
                 אני רוצה להירשם
                 <FileText className="w-5 h-5 mr-2" />
-              </Link>
+              </a>
             </Button>
 
             <Button

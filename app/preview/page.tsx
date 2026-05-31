@@ -4,19 +4,33 @@ import Link from "next/link"
 import Image from "next/image"
 import { ArrowRight, Play, FileText } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 
 export default function PreviewPage() {
   const [isPlaying, setIsPlaying] = useState(false)
-  const videoRef = useRef<HTMLVideoElement>(null)
+  const iframeRef = useRef<HTMLIFrameElement>(null)
 
-  const handlePlay = () => {
-    setIsPlaying(true)
-  }
+  useEffect(() => {
+    // Listen for messages from Bunny player
+    const handleMessage = (event: MessageEvent) => {
+      if (event.origin !== "https://player.mediadelivery.net") return
+      
+      try {
+        const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
+        
+        if (data.event === 'playing') {
+          setIsPlaying(true)
+        } else if (data.event === 'pause' || data.event === 'ended') {
+          setIsPlaying(false)
+        }
+      } catch (e) {
+        // Ignore parsing errors
+      }
+    }
 
-  const handlePause = () => {
-    setIsPlaying(false)
-  }
+    window.addEventListener('message', handleMessage)
+    return () => window.removeEventListener('message', handleMessage)
+  }, [])
 
   return (
     <div
@@ -47,17 +61,17 @@ export default function PreviewPage() {
         {/* ── Video player ── */}
         <div className={`w-full px-8 md:px-16 lg:px-24 transition-all duration-700 ease-out ${isPlaying ? '' : 'max-w-3xl mx-auto'}`}>
           <div className="rounded-2xl overflow-hidden shadow-[0_30px_80px_-20px_rgba(88,28,62,0.6)] border border-white/10 bg-black transition-all duration-700 ease-out">
-          <video
-            ref={videoRef}
-            src="/preview.mp4"
-            controls
-            poster="/background.png"
-            className="w-full h-auto object-contain transition-all duration-700 ease-out"
-            onPlay={handlePlay}
-            onEnded={handlePause}
-          >
-            הדפדפן שלך אינו תומך בהפעלת וידאו.
-          </video>
+            <div style={{position: "relative", paddingTop: "56.25%"}}>
+              <iframe 
+                ref={iframeRef}
+                src="https://player.mediadelivery.net/embed/671299/57e1f459-57a5-4b71-afdc-091a152fef22?autoplay=true&loop=false&muted=true&preload=true&responsive=true" 
+                loading="lazy" 
+                style={{border: 0, position: "absolute", top: 0, height: "100%", width: "100%"}} 
+                allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;fullscreen;" 
+                allowFullScreen={true}
+                className="transition-all duration-700 ease-out"
+              />
+            </div>
           </div>
         </div>
 

@@ -5,31 +5,58 @@ import Image from "next/image"
 import { ArrowRight, Play, FileText } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useState, useRef, useEffect } from "react"
+import Hls from "hls.js"
 
 export default function PreviewPage() {
   const [isPlaying, setIsPlaying] = useState(false)
-  const iframeRef = useRef<HTMLIFrameElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
-    // Listen for messages from Bunny player
-    const handleMessage = (event: MessageEvent) => {
-      if (event.origin !== "https://player.mediadelivery.net") return
+    const video = videoRef.current
+    if (!video) return
+
+    const videoSrc = "https://vz-423fe9ec-846.b-cdn.net/57e1f459-57a5-4b71-afdc-091a152fef22/playlist.m3u8"
+
+    // Check if HLS is supported
+    if (Hls.isSupported()) {
+      const hls = new Hls({
+        startLevel: -1, // -1 means auto, but we'll set it to highest quality
+        autoStartLoad: true,
+      })
       
-      try {
-        const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
-        
-        if (data.event === 'playing') {
-          setIsPlaying(true)
-        } else if (data.event === 'pause' || data.event === 'ended') {
-          setIsPlaying(false)
+      hls.loadSource(videoSrc)
+      hls.attachMedia(video)
+      
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        // Set to highest quality level (last level in the array)
+        const levels = hls.levels
+        if (levels.length > 0) {
+          hls.currentLevel = levels.length - 1 // Highest quality
         }
-      } catch (e) {
-        // Ignore parsing errors
+      })
+
+      return () => {
+        hls.destroy()
       }
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      // Native HLS support (Safari)
+      video.src = videoSrc
     }
 
-    window.addEventListener('message', handleMessage)
-    return () => window.removeEventListener('message', handleMessage)
+    // Track playing state
+    const handlePlay = () => setIsPlaying(true)
+    const handlePause = () => setIsPlaying(false)
+    const handleEnded = () => setIsPlaying(false)
+
+    video.addEventListener('play', handlePlay)
+    video.addEventListener('pause', handlePause)
+    video.addEventListener('ended', handleEnded)
+
+    return () => {
+      video.removeEventListener('play', handlePlay)
+      video.removeEventListener('pause', handlePause)
+      video.removeEventListener('ended', handleEnded)
+    }
   }, [])
 
   return (
@@ -61,17 +88,16 @@ export default function PreviewPage() {
         {/* ── Video player ── */}
         <div className={`w-full px-8 md:px-16 lg:px-24 transition-all duration-700 ease-out ${isPlaying ? '' : 'max-w-3xl mx-auto'}`}>
           <div className="rounded-2xl overflow-hidden shadow-[0_30px_80px_-20px_rgba(88,28,62,0.6)] border border-white/10 bg-black transition-all duration-700 ease-out">
-            <div style={{position: "relative", paddingTop: "56.25%"}}>
-              <iframe 
-                ref={iframeRef}
-                src="https://player.mediadelivery.net/embed/671299/57e1f459-57a5-4b71-afdc-091a152fef22?autoplay=true&loop=false&muted=true&preload=true&responsive=true" 
-                loading="lazy" 
-                style={{border: 0, position: "absolute", top: 0, height: "100%", width: "100%"}} 
-                allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;fullscreen;" 
-                allowFullScreen={true}
-                className="transition-all duration-700 ease-out"
-              />
-            </div>
+            <video
+              ref={videoRef}
+              controls
+              className="w-full h-full"
+              playsInline
+              preload="metadata"
+              poster="https://vz-423fe9ec-846.b-cdn.net/57e1f459-57a5-4b71-afdc-091a152fef22/thumbnail_c2fc8a94.jpg"
+            >
+              הדפדפן שלך לא תומך בתגית video.
+            </video>
           </div>
         </div>
 

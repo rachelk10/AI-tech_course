@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -11,6 +12,7 @@ import Link from "next/link"
 export default function PaymentPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const [showWelcomeText, setShowWelcomeText] = useState(false)
 
   if (status === "loading") {
     return (
@@ -106,11 +108,40 @@ export default function PaymentPage() {
             </Alert>
 
             <div className="space-y-3">
-              <Button className="w-full" size="lg" asChild>
-                <a href="mailto:rachelshor100@gmail.com?subject=רכישת קורס AI">
-                  צור קשר לרכישה
-                </a>
-              </Button>
+              {!showWelcomeText ? (
+                <Button 
+                  className="w-full" 
+                  size="lg"
+                  onClick={() => setShowWelcomeText(true)}
+                >
+                  מעבר לתשלום מאובטח
+                </Button>
+              ) : (
+                <div className="space-y-4 p-6 bg-muted/50 rounded-lg">
+                  <div className="text-right space-y-4 leading-relaxed">
+                    <p className="font-semibold text-lg">
+                      ברוכים הבאים למחזור ההשקה של הקורס.
+                    </p>
+                    <p>
+                      הפרק הראשון יעלה בעז"ה עד א' בתמוז, מועד פתיחת הקורס, ולאחר מכן יתווספו תכנים חדשים מדי שבוע. כל תכני הקורס צפויים לעלות בתוך כחודשיים, כאשר אנו פועלים במלוא המרץ כדי להשלים את ההעלאה אף מוקדם יותר.
+                    </p>
+                    <p>
+                      ההעלאה ההדרגתית מאפשרת ללמוד בצורה ממוקדת, לתרגל את החומר הנלמד ולהתקדם שלב אחר שלב, מבלי להרגיש מוצפים בכמות גדולה של תכנים בבת אחת.
+                    </p>
+                    <p>
+                      עם השלמת העלאת כל תכני הקורס, תישמר לך גישה מלאה לכל השיעורים למשך שלוש שנים, כך שניתן יהיה לחזור על החומר, לרענן נושאים חשובים ולהתקדם בקצב האישי שלך לאורך זמן.
+                    </p>
+                    <p>
+                      תודה שבחרת להצטרף אלינו. אנו שמחים ללוות אותך בדרך לרכישת ידע ומיומנויות בתחום הבינה המלאכותית – אחד התחומים המשפיעים והמבוקשים ביותר בעולם התעסוקה של היום. מאחלים לך הצלחה רבה, סיפוק והתקדמות משמעותית לאורך הקורס ובבניית קריירה עדכנית ורלוונטית לשנים הבאות.
+                    </p>
+                  </div>
+                  <Button className="w-full" size="lg" asChild>
+                    <a href="mailto:rachelshor100@gmail.com?subject=רכישת קורס AI">
+                      אני רוצה להרשם
+                    </a>
+                  </Button>
+                </div>
+              )}
               <Button variant="outline" asChild className="w-full">
                 <Link href="/">חזרה לדף הבית</Link>
               </Button>

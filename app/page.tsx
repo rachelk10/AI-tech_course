@@ -153,6 +153,7 @@ export default function HomePage() {
   const [newsletterSubmitting, setNewsletterSubmitting] = useState(false)
   const [newsletterFeedback, setNewsletterFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null)
   const [termsAccepted, setTermsAccepted] = useState(false)
+  const [showWelcomeText, setShowWelcomeText] = useState(false)
 
   const toggleModule = (moduleId: number) => {
     setOpenModules((prev) =>
@@ -631,13 +632,42 @@ export default function HomePage() {
         <div className="max-w-2xl mx-auto">
           <div className="rounded-3xl p-8 md:p-12 bg-[#581c3e]/25 backdrop-blur-md border border-[#7d2b60]/30 text-center">
             <h2 className="text-2xl md:text-3xl font-bold mb-8 text-foreground">מוכנ/ה להצטרף לקורס?</h2>
-            <a
-              href="https://pay.sumit.co.il/vunqpb/vwedot/vwedou/payment/"
-              className="inline-flex items-center justify-center gap-3 w-full px-8 py-5 rounded-2xl text-lg font-bold text-white bg-gradient-to-r from-[var(--gradient-purple)] via-[var(--gradient-blue)] to-[var(--gradient-pink)] shadow-[0_12px_32px_-12px_rgba(88,28,62,0.7)] hover:scale-105 transition-transform duration-300"
-            >
-              מעבר לתשלום מאובטח
-              <ArrowLeft className="w-5 h-5" />
-            </a>
+            {!showWelcomeText ? (
+              <button
+                onClick={() => setShowWelcomeText(true)}
+                className="inline-flex items-center justify-center gap-3 w-full px-8 py-5 rounded-2xl text-lg font-bold text-white bg-gradient-to-r from-[var(--gradient-purple)] via-[var(--gradient-blue)] to-[var(--gradient-pink)] shadow-[0_12px_32px_-12px_rgba(88,28,62,0.7)] hover:scale-105 transition-transform duration-300"
+              >
+                מעבר לתשלום מאובטח
+                <ArrowLeft className="w-5 h-5" />
+              </button>
+            ) : (
+              <div className="space-y-6 mt-8">
+                <div className="text-right space-y-6 leading-relaxed bg-background/50 rounded-2xl p-8">
+                  <p className="font-semibold text-xl text-foreground">
+                    ברוכים הבאים למחזור ההשקה של הקורס.
+                  </p>
+                  <p className="text-muted-foreground">
+                    הפרק הראשון יעלה בעז"ה עד א' בתמוז, מועד פתיחת הקורס, ולאחר מכן יתווספו תכנים חדשים מדי שבוע. כל תכני הקורס צפויים לעלות בתוך כחודשיים, כאשר אנו פועלים במלוא המרץ כדי להשלים את ההעלאה אף מוקדם יותר.
+                  </p>
+                  <p className="text-muted-foreground">
+                    ההעלאה ההדרגתית מאפשרת ללמוד בצורה ממוקדת, לתרגל את החומר הנלמד ולהתקדם שלב אחר שלב, מבלי להרגיש מוצפים בכמות גדולה של תכנים בבת אחת.
+                  </p>
+                  <p className="text-muted-foreground">
+                    עם השלמת העלאת כל תכני הקורס, תישמר לך גישה מלאה לכל השיעורים למשך שלוש שנים, כך שניתן יהיה לחזור על החומר, לרענן נושאים חשובים ולהתקדם בקצב האישי שלך לאורך זמן.
+                  </p>
+                  <p className="text-muted-foreground">
+                    תודה שבחרת להצטרף אלינו. אנו שמחים ללוות אותך בדרך לרכישת ידע ומיומנויות בתחום הבינה המלאכותית – אחד התחומים המשפיעים והמבוקשים ביותר בעולם התעסוקה של היום. מאחלים לך הצלחה רבה, סיפוק והתקדמות משמעותית לאורך הקורס ובבניית קריירה עדכנית ורלוונטית לשנים הבאות.
+                  </p>
+                </div>
+                <a
+                  href="https://pay.sumit.co.il/vunqpb/vwedot/vwedou/payment/"
+                  className="inline-flex items-center justify-center gap-3 w-full px-8 py-5 rounded-2xl text-lg font-bold text-white bg-gradient-to-r from-[var(--gradient-purple)] via-[var(--gradient-blue)] to-[var(--gradient-pink)] shadow-[0_12px_32px_-12px_rgba(88,28,62,0.7)] hover:scale-105 transition-transform duration-300"
+                >
+                  אני רוצה להרשם
+                  <ArrowLeft className="w-5 h-5" />
+                </a>
+              </div>
+            )}
           </div>
         </div>
       </section>

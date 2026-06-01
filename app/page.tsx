@@ -13,7 +13,6 @@ import {
   CheckCircle2,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { UpdatePopup } from "@/components/update-popup"
 import { SyllabusModal } from "@/components/syllabus-modal"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
@@ -833,7 +832,6 @@ export default function HomePage() {
       </footer>
 
       {/* Modals */}
-      <UpdatePopup />
       <SyllabusModal open={syllabusOpen} onOpenChange={setSyllabusOpen} />
 
       <Dialog open={chapterDialogOpen} onOpenChange={setChapterDialogOpen}>

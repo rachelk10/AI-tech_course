@@ -1,8 +1,15 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
-import { getToken } from "next-auth/jwt"
+// import { getToken } from "next-auth/jwt"
+
+// ⚠️ Authentication temporarily disabled for deployment
+// TODO: Re-enable authentication system
 
 export async function middleware(request: NextRequest) {
+  // Authentication temporarily disabled
+  return NextResponse.next()
+  
+  /* COMMENTED OUT - RE-ENABLE WHEN FIXING AUTH
   const token = await getToken({ 
     req: request,
     secret: process.env.NEXTAUTH_SECRET 
@@ -24,6 +31,7 @@ export async function middleware(request: NextRequest) {
   }
 
   return NextResponse.next()
+  */
 }
 
 export const config = {

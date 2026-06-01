@@ -1,16 +1,46 @@
 "use client"
 
-import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
+// import { useSession } from "next-auth/react"
+// import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { CheckCircle2, XCircle } from "lucide-react"
+// import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+// import { CheckCircle2, XCircle } from "lucide-react"
 import Link from "next/link"
+import { AlertCircle } from "lucide-react"
+
+// ⚠️ Authentication temporarily disabled for deployment
+// TODO: Re-enable authentication system
 
 export default function ProfilePage() {
-  const { data: session, status } = useSession()
-  const router = useRouter()
+  // const { data: session, status } = useSession()
+  // const router = useRouter()
+
+  // Profile page temporarily disabled
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted p-4 pt-20">
+      <div className="max-w-2xl mx-auto">
+        <Card>
+          <CardHeader className="text-center">
+            <div className="flex justify-center mb-4">
+              <AlertCircle className="h-16 w-16 text-amber-600" />
+            </div>
+            <CardTitle className="text-2xl">הדף אינו זמין כרגע</CardTitle>
+            <CardDescription>
+              דף הפרופיל זמנית אינו זמין. נשמח לראותך בקרוב!
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Button asChild className="w-full">
+              <Link href="/">חזרה לדף הבית</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  )
+
+  /* COMMENTED OUT - RE-ENABLE WHEN FIXING AUTH
 
   if (status === "loading") {
     return (
@@ -107,4 +137,5 @@ export default function ProfilePage() {
       </div>
     </div>
   )
+  */
 }

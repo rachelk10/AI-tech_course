@@ -1,8 +1,9 @@
 "use client"
 
-import { signOut, useSession } from "next-auth/react"
+// import { signOut, useSession } from "next-auth/react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+/*
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,9 +14,18 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { LogOut, User, CreditCard } from "lucide-react"
+*/
+
+// ⚠️ Authentication temporarily disabled for deployment
+// TODO: Re-enable authentication system
 
 export function AuthButtons() {
-  const { data: session, status } = useSession()
+  // const { data: session, status } = useSession()
+
+  // Authentication temporarily disabled - hide auth buttons
+  return null
+
+  /* COMMENTED OUT - RE-ENABLE WHEN FIXING AUTH
 
   if (status === "loading") {
     return (
@@ -99,4 +109,5 @@ export function AuthButtons() {
       </Button>
     </div>
   )
+  */
 }

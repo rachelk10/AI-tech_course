@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
+// import { useSession } from "next-auth/react"
+// import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
@@ -10,9 +10,13 @@ import { CheckCircle2, CreditCard } from "lucide-react"
 import Link from "next/link"
 
 export default function PaymentPage() {
-  const { data: session, status } = useSession()
-  const router = useRouter()
+  // const { data: session, status } = useSession()
+  // const router = useRouter()
   const [showWelcomeText, setShowWelcomeText] = useState(false)
+
+  // ⚠️ Authentication temporarily disabled
+  const session = null
+  const status = "unauthenticated"
 
   if (status === "loading") {
     return (
@@ -22,6 +26,8 @@ export default function PaymentPage() {
     )
   }
 
+  // Temporarily disabled auth check
+  /* 
   if (!session) {
     router.push("/auth/signin?callbackUrl=/payment")
     return null
@@ -54,6 +60,7 @@ export default function PaymentPage() {
       </div>
     )
   }
+  */
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted p-4 pt-20">

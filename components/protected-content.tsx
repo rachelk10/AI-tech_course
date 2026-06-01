@@ -1,12 +1,15 @@
 "use client"
 
-import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
+// import { useSession } from "next-auth/react"
+// import { useRouter } from "next/navigation"
 import { ReactNode } from "react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Lock, LogIn } from "lucide-react"
 import Link from "next/link"
+
+// ⚠️ Authentication temporarily disabled for deployment
+// TODO: Re-enable authentication system
 
 interface ProtectedContentProps {
   children: ReactNode
@@ -19,8 +22,13 @@ export function ProtectedContent({
   requirePayment = true,
   fallback 
 }: ProtectedContentProps) {
-  const { data: session, status } = useSession()
-  const router = useRouter()
+  // const { data: session, status } = useSession()
+  // const router = useRouter()
+  
+  // Temporarily grant access to all content
+  return <>{children}</>
+  
+  /* COMMENTED OUT - RE-ENABLE WHEN FIXING AUTH
 
   // טוען
   if (status === "loading") {
@@ -74,4 +82,5 @@ export function ProtectedContent({
 
   // יש גישה
   return <>{children}</>
+  */
 }

@@ -1,8 +1,11 @@
 "use client"
 
-import { useSession } from "next-auth/react"
+// import { useSession } from "next-auth/react"
 import { ReactNode } from "react"
 import { Lock } from "lucide-react"
+
+// ⚠️ Authentication temporarily disabled for deployment
+// TODO: Re-enable authentication system
 
 interface VideoPlayerProps {
   videoUrl?: string
@@ -11,9 +14,11 @@ interface VideoPlayerProps {
 }
 
 export function VideoPlayer({ videoUrl, title, children }: VideoPlayerProps) {
-  const { data: session } = useSession()
-  const hasAccess = session?.user?.hasPaid
+  // const { data: session } = useSession()
+  // const hasAccess = session?.user?.hasPaid
+  const hasAccess = true // Temporarily grant access to all
 
+  /* COMMENTED OUT - RE-ENABLE WHEN FIXING AUTH
   if (!hasAccess) {
     return (
       <div className="relative aspect-video bg-muted rounded-lg flex items-center justify-center">
@@ -26,6 +31,7 @@ export function VideoPlayer({ videoUrl, title, children }: VideoPlayerProps) {
       </div>
     )
   }
+  */
 
   if (!videoUrl) {
     return (

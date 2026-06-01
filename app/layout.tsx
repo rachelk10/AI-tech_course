@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Heebo, Secular_One, Space_Grotesk } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { AuthProvider } from '@/components/auth-provider'
 import './globals.css'
 
 const assistant = Heebo({ 
@@ -36,8 +37,10 @@ export default function RootLayout({
   return (
     <html lang="he" dir="rtl" className="bg-background">
       <body className={`${assistant.variable} ${displayFont.variable} ${spaceGrotesk.variable} font-sans antialiased`}>
-        {children}
-        {process.env.NODE_ENV === 'production' && <Analytics />}
+        <AuthProvider>
+          {children}
+          {process.env.NODE_ENV === 'production' && <Analytics />}
+        </AuthProvider>
       </body>
     </html>
   )

@@ -17,6 +17,7 @@ import { UpdatePopup } from "@/components/update-popup"
 import { SyllabusModal } from "@/components/syllabus-modal"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import { AuthButtons } from "@/components/auth-buttons"
 
 interface Chapter {
   title: string
@@ -311,14 +312,17 @@ export default function HomePage() {
           </div>
         </div>
 
-        <nav className="mt-2 flex items-center justify-center gap-4 px-6 text-sm text-slate-700 md:gap-8 md:px-12 md:text-base lg:px-20">
-          <Link href="#hero" className="font-medium transition-colors hover:text-[var(--header-right)]">בית</Link>
-          <Link href="#for-who" className="font-medium transition-colors hover:text-[var(--header-right)]">למי מיועד</Link>
-          <Link href="#outcomes" className="font-medium transition-colors hover:text-[var(--header-right)]">מה מקבלים</Link>
-          <Link href="#how-delivered" className="font-medium transition-colors hover:text-[var(--header-right)]">מבנה הקורס</Link>
-          <Link href="#content" className="font-medium transition-colors hover:text-[var(--header-right)]">תוכן הקורס</Link>
-          <Link href="#about" className="font-medium transition-colors hover:text-[var(--header-right)]">אודות</Link>
-          <Link href="#contact" className="font-medium transition-colors hover:text-[var(--header-right)]">צור קשר</Link>
+        <nav className="mt-2 flex items-center justify-between gap-4 px-6 text-sm text-slate-700 md:gap-8 md:px-12 md:text-base lg:px-20">
+          <div className="flex items-center gap-4 md:gap-8">
+            <Link href="#hero" className="font-medium transition-colors hover:text-[var(--header-right)]">בית</Link>
+            <Link href="#for-who" className="font-medium transition-colors hover:text-[var(--header-right)]">למי מיועד</Link>
+            <Link href="#outcomes" className="font-medium transition-colors hover:text-[var(--header-right)]">מה מקבלים</Link>
+            <Link href="#how-delivered" className="font-medium transition-colors hover:text-[var(--header-right)]">מבנה הקורס</Link>
+            <Link href="#content" className="font-medium transition-colors hover:text-[var(--header-right)]">תוכן הקורס</Link>
+            <Link href="#about" className="font-medium transition-colors hover:text-[var(--header-right)]">אודות</Link>
+            <Link href="#contact" className="font-medium transition-colors hover:text-[var(--header-right)]">צור קשר</Link>
+          </div>
+          <AuthButtons />
         </nav>
       </header>
 

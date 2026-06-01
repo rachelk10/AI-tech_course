@@ -1,5 +1,85 @@
 # v0-digital-course-website
 
+קורס Machine Learning מקיף בעברית עם מערכת כניסת משתמשים מלאה.
+
+## 🎯 תכונות
+
+- ✅ **מערכת התחברות מלאה** - הרשמה, התחברות, Google OAuth
+- ✅ **ניהול משתמשים** - פרופילים אישיים, מעקב אחר תשלומים
+- ✅ **הגנה על תוכן** - רק משתמשים ששילמו יכולים לצפות בסרטונים
+- ✅ **ממשק מודרני** - Next.js 16, React 19, Tailwind CSS
+- ✅ **בסיס נתונים** - Prisma + PostgreSQL
+
+## � **[➡️ קרא את התיעוד המלא ב-INDEX.md](INDEX.md)**
+
+## 🚀 התחלה מהירה (4 צעדים)
+
+```bash
+# 1. התקן חבילות
+npm install --force
+
+# 2. ערוך .env.local
+# הוסף: DATABASE_URL, NEXTAUTH_SECRET
+
+# 3. צור טבלאות
+npm run db:migrate
+
+# 4. הרץ
+npm run dev
+```
+
+**📖 הוראות מפורטות:**
+- **[SUMMARY.md](SUMMARY.md)** - סיכום בעמוד אחד ⭐
+- **[QUICKSTART.md](QUICKSTART.md)** - מדריך 5 דקות
+- **[COMMANDS.md](COMMANDS.md)** - פקודות להעתקה
+
+## 🛠️ טכנולוגיות
+
+- **Framework**: Next.js 16 (App Router)
+- **UI**: React 19, Tailwind CSS, Radix UI
+- **Auth**: NextAuth.js
+- **Database**: Prisma + PostgreSQL
+- **Deployment**: Vercel
+
+## 📁 מבנה הפרויקט
+
+```
+├── app/                    # Next.js App Router
+│   ├── api/               # API routes
+│   ├── auth/              # דפי התחברות/הרשמה
+│   ├── profile/           # פרופיל משתמש
+│   └── payment/           # רכישת קורס
+├── components/            # React components
+├── lib/                   # Utilities
+├── prisma/               # Database schema
+└── scripts/              # כלי עזר
+```
+
+## 🔐 מערכת ההתחברות
+
+### תכונות זמינות:
+- הרשמה עם מייל/סיסמה (סיסמאות מוצפנות)
+- התחברות עם מייל/סיסמה
+- כניסה עם Google (אופציונלי)
+- דפי פרופיל ותשלום
+- הגנה אוטומטית על תוכן
+
+### ניהול משתמשים:
+```bash
+# פתח ממשק גרפי לבסיס הנתונים
+npm run db:studio
+
+# עדכן סטטוס תשלום של משתמש
+npx ts-node scripts/update-user-payment.ts user@example.com
+```
+
+## 🆘 בעיות?
+
+- **התקנה**: [INSTALL_TROUBLESHOOTING.md](INSTALL_TROUBLESHOOTING.md)
+- **שאלות כלליות**: rachelshor100@gmail.com
+
+---
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [v0](https://v0.app).
 
 ## Built with v0

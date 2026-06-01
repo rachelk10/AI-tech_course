@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server"
-import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/lib/auth"
+import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 
 // API endpoint לאישור תשלום
 // בעתיד זה יהיה webhook מספק התשלום (Stripe, PayPal וכו')
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await auth()
     
     if (!session?.user?.email) {
       return NextResponse.json(
@@ -46,7 +45,7 @@ export async function POST(request: Request) {
 // API endpoint לבדיקת סטטוס תשלום
 export async function GET(request: Request) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await auth()
     
     if (!session?.user?.email) {
       return NextResponse.json(

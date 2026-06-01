@@ -804,7 +804,7 @@ export default function HomePage() {
             <div className="flex flex-col gap-4">
               <div>
                 <h3 className="text-2xl font-bold text-foreground mb-3">קבל עדכונים והטבות</h3>
-                <p className="text-base md:text-lg text-foreground/80 mb-5">הרשם לעדכונים על קורסים חדשים והטבות בעבוד</p>
+                <p className="text-base md:text-lg text-foreground/80 mb-5">הרשם לעדכונים על קורסים חדשים והטבות</p>
               </div>
               <form className="flex flex-col gap-2" onSubmit={handleNewsletterSubmit}>
                 <input

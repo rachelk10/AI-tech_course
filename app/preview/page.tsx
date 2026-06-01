@@ -108,10 +108,10 @@ export default function PreviewPage() {
               asChild
               className="bg-gradient-to-r from-[#581c3e] via-[#321332] to-[#18122b] text-white border-0 px-8 py-6 text-base rounded-2xl shadow-[0_14px_36px_-14px_rgba(88,28,62,0.8)] hover:scale-105 transition-transform duration-300"
             >
-              <a href="https://pay.sumit.co.il/vunqpb/vwedot/vwedou/payment/">
+              <Link href="/#payment">
                 אני רוצה להירשם
                 <FileText className="w-5 h-5 mr-2" />
-              </a>
+              </Link>
             </Button>
 
             <Button

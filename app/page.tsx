@@ -312,7 +312,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        <nav className="mt-2 flex items-center justify-between gap-4 px-6 text-sm text-slate-700 md:gap-8 md:px-12 md:text-base lg:px-20">
+        <nav className="mt-2 flex items-center justify-center gap-4 px-6 text-sm text-slate-700 md:gap-8 md:px-12 md:text-base lg:px-20 relative">
           <div className="flex items-center gap-4 md:gap-8">
             <Link href="#hero" className="font-medium transition-colors hover:text-[var(--header-right)]">בית</Link>
             <Link href="#for-who" className="font-medium transition-colors hover:text-[var(--header-right)]">למי מיועד</Link>
@@ -322,7 +322,9 @@ export default function HomePage() {
             <Link href="#about" className="font-medium transition-colors hover:text-[var(--header-right)]">אודות</Link>
             <Link href="#contact" className="font-medium transition-colors hover:text-[var(--header-right)]">צור קשר</Link>
           </div>
-          <AuthButtons />
+          <div className="absolute left-6 md:left-12 lg:left-20">
+            <AuthButtons />
+          </div>
         </nav>
       </header>
 
@@ -353,7 +355,7 @@ export default function HomePage() {
           </p>
 
           {/* CTA Button */}
-          <Link href="#overview">
+          <Link href="#payment">
             <Button
               size="lg"
               className="group relative overflow-hidden border-0 bg-[linear-gradient(90deg,#18122b_0%,#321332_50%,#581c3e_100%)] px-8 py-6 text-lg font-semibold text-white shadow-[0_18px_36px_-20px_rgba(24,18,43,0.85)] hover:scale-105 transition-transform duration-300"
@@ -484,15 +486,28 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col lg:flex-row gap-8 items-start mb-12">
             <div className="flex-1">
-              <Button
-                asChild
-                className="mb-5 animate-pulse bg-gradient-to-r from-[var(--gradient-purple)] via-[var(--gradient-blue)] to-[var(--gradient-pink)] text-white border-0 px-8 py-7 text-lg rounded-2xl shadow-[0_12px_32px_-12px_rgba(88,28,62,0.7)] hover:animate-none hover:scale-105 transition-transform duration-300"
-              >
-                <Link href="/preview">
-                 לצפיה בסרטון לדוגמא
-                  <Play className="w-6 h-6 mr-2" />
-                </Link>
-              </Button>
+              {/* כפתור סרטון לדוגמא מעוצב ובולט */}
+              <div className="relative mb-8 w-fit animate-[float_3s_ease-in-out_infinite]">
+                <div className="absolute -inset-1 bg-gradient-to-r from-[var(--gradient-purple)] via-[var(--gradient-blue)] to-[var(--gradient-pink)] rounded-3xl blur-lg opacity-75 animate-pulse"></div>
+                <Button
+                  asChild
+                  className="relative group bg-gradient-to-r from-[var(--gradient-purple)] via-[var(--gradient-blue)] to-[var(--gradient-pink)] text-white border-0 px-10 py-8 text-xl rounded-3xl shadow-[0_20px_50px_-12px_rgba(88,28,62,0.8)] hover:shadow-[0_25px_60px_-12px_rgba(88,28,62,1)] transition-all duration-300"
+                >
+                  <Link href="/preview" className="flex items-center gap-3">
+                    <div className="relative">
+                      <Play className="w-8 h-8 mr-1 animate-pulse" fill="currentColor" />
+                      <span className="absolute top-0 right-0 flex h-3 w-3">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+                      </span>
+                    </div>
+                    <span className="font-bold">צפה בסרטון לדוגמא</span>
+                    <span className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-semibold border border-white/30">
+                      חינם!
+                    </span>
+                  </Link>
+                </Button>
+              </div>
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
                 <span className="gradient-text">Machine Learning</span>
                 <br />

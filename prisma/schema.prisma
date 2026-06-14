@@ -17,11 +17,33 @@ model User {
   emailVerified DateTime?
   image         String?
   password      String?
+  referralCode  String?   @unique
+  referredById  String?
+  referredByReferrerId String?
   hasPaid       Boolean   @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  referredBy    User?     @relation("UserReferrals", fields: [referredById], references: [id])
+  referrals     User[]    @relation("UserReferrals")
+  referredByReferrer Referrer? @relation("ExternalReferrerReferrals", fields: [referredByReferrerId], references: [id])
   accounts      Account[]
   sessions      Session[]
+
+  @@index([referredById])
+  @@index([referredByReferrerId])
+}
+
+model Referrer {
+  id           String   @id @default(cuid())
+  name         String
+  email        String?
+  phone        String?
+  referralCode String   @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  referrals    User[]   @relation("ExternalReferrerReferrals")
+
+  @@index([name])
 }
 
 model Account {

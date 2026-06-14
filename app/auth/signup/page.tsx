@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { signIn } from "next-auth/react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -13,6 +13,8 @@ import { Loader2 } from "lucide-react"
 
 export default function SignUpPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const referralCode = searchParams.get("ref")?.trim() || ""
   const [error, setError] = useState<string>("")
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
@@ -48,6 +50,7 @@ export default function SignUpPage() {
           name: formData.name,
           email: formData.email,
           password: formData.password,
+          referralCode: referralCode || undefined,
         }),
       })
 
@@ -103,6 +106,12 @@ export default function SignUpPage() {
           {error && (
             <Alert variant="destructive">
               <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
+          {referralCode && (
+            <Alert>
+              <AlertDescription>הגעת דרך קישור המלצה אישי. ההרשמה שלך תזוכה לממליצה 🙌</AlertDescription>
             </Alert>
           )}
 

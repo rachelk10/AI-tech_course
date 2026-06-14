@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { signIn } from "next-auth/react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -13,8 +13,7 @@ import { Loader2 } from "lucide-react"
 
 export default function SignUpPage() {
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const referralCode = searchParams.get("ref")?.trim() || ""
+  const [referralCode, setReferralCode] = useState("")
   const [error, setError] = useState<string>("")
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
@@ -23,6 +22,11 @@ export default function SignUpPage() {
     password: "",
     confirmPassword: "",
   })
+
+  useEffect(() => {
+    const code = new URLSearchParams(window.location.search).get("ref")?.trim() || ""
+    setReferralCode(code)
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

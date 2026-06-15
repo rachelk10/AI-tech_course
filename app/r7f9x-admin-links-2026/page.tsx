@@ -1,7 +1,10 @@
 import Link from "next/link"
 import { headers } from "next/headers"
 import { prisma } from "@/lib/prisma"
+import { promises as fs } from "fs"
+import path from "path"
 import { ExternalReferrerForm } from "@/components/referrals/external-referrer-form"
+import { BatchReferrerForm } from "@/components/referrals/batch-referrer-form"
 
 export const dynamic = "force-dynamic"
 
@@ -55,53 +58,70 @@ export default async function AdminLinksPage() {
   const baseUrl = `${protocol}://${host}`
 
   try {
-    await ensureReferralCodesForExistingUsers()
+    // Try to use Prisma if available (may fail in file-only mode)
+    let users = []
+    try {
+      await ensureReferralCodesForExistingUsers()
 
-    const users = await prisma.user.findMany({
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        referralCode: true,
-        createdAt: true,
-        referredBy: {
-          select: {
-            name: true,
-            email: true,
+      users = await prisma.user.findMany({
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          referralCode: true,
+          createdAt: true,
+          referredBy: {
+            select: {
+              name: true,
+              email: true,
+            },
+          },
+          referredByReferrer: {
+            select: {
+              name: true,
+              email: true,
+              referralCode: true,
+            },
+          },
+          _count: {
+            select: {
+              referrals: true,
+            },
           },
         },
-        referredByReferrer: {
-          select: {
-            name: true,
-            email: true,
-            referralCode: true,
-          },
-        },
-        _count: {
-          select: {
-            referrals: true,
-          },
-        },
-      },
-      orderBy: { createdAt: "desc" },
-    })
+        orderBy: { createdAt: "desc" },
+      })
+    } catch (e) {
+      // Prisma/DB not available — fallback to empty users list and continue
+      console.warn("Prisma not available or DB not synced — rendering admin links in file-only mode.", e)
+      users = []
+    }
 
-    const externalReferrers = await prisma.referrer.findMany({
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        phone: true,
-        referralCode: true,
-        createdAt: true,
-        _count: {
-          select: {
-            referrals: true,
-          },
-        },
-      },
-      orderBy: { createdAt: "desc" },
-    })
+    // Read external referrers from local JSON file (no DB)
+    let externalReferrers: Array<any> = []
+    try {
+      const referrersPath = path.join(process.cwd(), "data", "referrers.json")
+      const raw = await fs.readFile(referrersPath, "utf-8")
+      externalReferrers = JSON.parse(raw)
+      // normalize fields to match Prisma shape used below
+      externalReferrers = externalReferrers.map((r) => ({
+        id: r.id ?? r.referralCode,
+        name: r.name,
+        email: r.email ?? null,
+        phone: r.phone ?? null,
+        referralCode: r.referralCode,
+        createdAt: r.createdAt ? new Date(r.createdAt).toISOString() : null,
+        leads: Array.isArray(r.leads) ? r.leads : [],
+        _count: { referrals: Number(r.count || 0) },
+      }))
+      externalReferrers.sort((a, b) => {
+        if (!a.createdAt) return 1
+        if (!b.createdAt) return -1
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      })
+    } catch (e) {
+      externalReferrers = []
+    }
 
     return (
       <main className="min-h-screen bg-background p-6">
@@ -112,7 +132,7 @@ export default async function AdminLinksPage() {
               כאן אפשר ליצור לינקים גם לממליצות לא רשומות, ולראות מי המליץ על מי.
             </p>
             <p className="text-sm text-muted-foreground">
-              דוגמת לינק: <code>{`${baseUrl}/auth/signup?ref=XXXXXXXXXX`}</code>
+              דוגמת לינק: <code>{`${baseUrl}/?ref=XXXXXXXXXX`}</code>
             </p>
             <div className="pt-2">
               <Link href="/" className="text-sm underline">
@@ -121,7 +141,10 @@ export default async function AdminLinksPage() {
             </div>
           </div>
 
-          <ExternalReferrerForm />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <ExternalReferrerForm />
+            <BatchReferrerForm />
+          </div>
 
           <div className="overflow-x-auto rounded-xl border">
             <table className="w-full min-w-[1000px] text-right text-sm">
@@ -132,13 +155,14 @@ export default async function AdminLinksPage() {
                   <th className="px-3 py-2">טלפון</th>
                   <th className="px-3 py-2">קוד</th>
                   <th className="px-3 py-2">לינק שיתוף</th>
+                  <th className="px-3 py-2">לקוחות שהגיעו</th>
                   <th className="px-3 py-2">כמה הביאה</th>
                   <th className="px-3 py-2">תאריך יצירה</th>
                 </tr>
               </thead>
               <tbody>
                 {externalReferrers.map((referrer) => {
-                  const referralLink = `${baseUrl}/auth/signup?ref=${referrer.referralCode}`
+                  const referralLink = `${baseUrl}/?ref=${referrer.referralCode}`
 
                   return (
                     <tr key={referrer.id} className="border-t align-top">
@@ -147,6 +171,17 @@ export default async function AdminLinksPage() {
                       <td className="px-3 py-2">{referrer.phone || "-"}</td>
                       <td className="px-3 py-2 font-mono">{referrer.referralCode}</td>
                       <td className="px-3 py-2 font-mono text-xs break-all">{referralLink}</td>
+                      <td className="px-3 py-2 text-xs space-y-1">
+                        {Array.isArray(referrer.leads) && referrer.leads.length > 0 ? (
+                          referrer.leads.map((lead: any, index: number) => (
+                            <div key={`${lead.email || lead.name}-${index}`}>
+                              {lead.name || "-"} {lead.email ? `(${lead.email})` : ""}
+                            </div>
+                          ))
+                        ) : (
+                          <span className="text-muted-foreground">-</span>
+                        )}
+                      </td>
                       <td className="px-3 py-2">{referrer._count.referrals}</td>
                       <td className="px-3 py-2">{new Date(referrer.createdAt).toLocaleString("he-IL")}</td>
                     </tr>

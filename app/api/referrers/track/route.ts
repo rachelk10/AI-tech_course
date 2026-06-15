@@ -1,0 +1,99 @@
+import { NextResponse } from "next/server"
+import { sanitizeReferralCode } from "@/lib/referrals"
+import { promises as fs } from "fs"
+import path from "path"
+
+export async function POST(request: Request) {
+  try {
+    const body = (await request.json()) as {
+      name?: string
+      email?: string
+      referralCode?: string
+    }
+
+    const name = body.name?.trim()
+    const email = body.email?.trim()
+    const referralCodeFromBody = sanitizeReferralCode(body.referralCode)
+
+    const cookieHeader = request.headers.get("cookie") || ""
+    const referralCodeFromCookie = cookieHeader
+      .split(";")
+      .map((part) => part.trim())
+      .find((part) => part.startsWith("referral_code="))
+      ? sanitizeReferralCode(cookieHeader
+          .split(";")
+          .map((part) => part.trim())
+          .find((part) => part.startsWith("referral_code="))
+          ?.split("=")[1])
+      : null
+
+    const referralCode = referralCodeFromBody || referralCodeFromCookie
+
+    if (!name || !email) {
+      return NextResponse.json(
+        { error: "אנא מלאי שם ומייל" },
+        { status: 400 }
+      )
+    }
+
+    if (!referralCode) {
+      return NextResponse.json(
+        { error: "לא נמצא קוד הפניה" },
+        { status: 400 }
+      )
+    }
+
+    const referrersPath = path.join(process.cwd(), "data", "referrers.json")
+    let referrers: Array<any> = []
+
+    try {
+      const raw = await fs.readFile(referrersPath, "utf-8")
+      referrers = JSON.parse(raw)
+    } catch (e) {
+      return NextResponse.json(
+        { error: "לא נמצא קובץ ממליצים" },
+        { status: 404 }
+      )
+    }
+
+    const found = referrers.find(
+      (ref) => String(ref.referralCode).toUpperCase() === String(referralCode).toUpperCase()
+    )
+
+    if (!found) {
+      return NextResponse.json(
+        { error: "ממליץ לא נמצא עבור קוד הפניה זה" },
+        { status: 404 }
+      )
+    }
+
+    found.count = (Number(found.count) || 0) + 1
+    found.leads = Array.isArray(found.leads) ? found.leads : []
+    found.leads.push({
+      name,
+      email,
+      createdAt: new Date().toISOString(),
+    })
+
+    await fs.mkdir(path.join(process.cwd(), "data"), { recursive: true })
+    await fs.writeFile(referrersPath, JSON.stringify(referrers, null, 2), "utf-8")
+
+    return NextResponse.json(
+      {
+        success: true,
+        referrer: {
+          referralCode: found.referralCode,
+          count: found.count,
+        },
+        lead: {
+          name,
+          email,
+        },
+      },
+      { status: 200 }
+    )
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "אירעה שגיאה בעדכון הממליץ"
+    return NextResponse.json({ error: message }, { status: 500 })
+  }
+}

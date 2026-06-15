@@ -1,22 +1,100 @@
 "use client"
 
-import { useState } from "react"
-// import { useSession } from "next-auth/react"
-// import { useRouter } from "next/navigation"
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CheckCircle2, CreditCard } from "lucide-react"
 import Link from "next/link"
 
 export default function PaymentPage() {
-  // const { data: session, status } = useSession()
-  // const router = useRouter()
+  const router = useRouter()
+  const [showDialog, setShowDialog] = useState(false)
+  const [referrers, setReferrers] = useState<any[]>([])
+  const [loading, setLoading] = useState(false)
+  const [selectedReferrer, setSelectedReferrer] = useState("")
+  const [email, setEmail] = useState("")
+  const [error, setError] = useState("")
   const [showWelcomeText, setShowWelcomeText] = useState(false)
 
   // ⚠️ Authentication temporarily disabled
   const session = null
   const status = "unauthenticated"
+
+  useEffect(() => {
+    if (showDialog) {
+      loadReferrers()
+    }
+  }, [showDialog])
+
+  const loadReferrers = async () => {
+    try {
+      const res = await fetch("/api/referrers")
+      const data = await res.json()
+      setReferrers(Array.isArray(data) ? data : [])
+    } catch (e) {
+      console.error("Failed to load referrers:", e)
+      setReferrers([])
+    }
+  }
+
+  const handleSubmit = async () => {
+    if (!email || !selectedReferrer) {
+      setError("אנא מלא את כל השדות")
+      return
+    }
+
+    setLoading(true)
+    setError("")
+
+    try {
+      // Save referral code to cookie before registration
+      document.cookie = `referral_code=${selectedReferrer}; path=/; max-age=${7 * 24 * 60 * 60}`
+
+      // 1. Register the user with referral code
+      const registerRes = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          password: Math.random().toString(36).slice(-12), // temp password
+          name: email.split("@")[0],
+          referralCode: selectedReferrer,
+        }),
+      })
+
+      if (!registerRes.ok) {
+        const errorData = await registerRes.json()
+        throw new Error(errorData.error || "ההרשמה נכשלה")
+      }
+
+      // 2. Confirm payment (increment referral count and save lead info)
+      const paymentRes = await fetch("/api/payment/confirm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          referralCode: selectedReferrer,
+          email,
+          name: email.split("@")[0],
+        }),
+      })
+
+      if (paymentRes.ok) {
+        setShowDialog(false)
+        router.push("/?payment=success")
+      } else {
+        throw new Error("שגיאה באישור התשלום")
+      }
+    } catch (err) {
+      setError((err as Error).message)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   if (status === "loading") {
     return (
@@ -142,10 +220,12 @@ export default function PaymentPage() {
                       תודה שבחרת להצטרף אלינו. אנו שמחים ללוות אותך בדרך לרכישת ידע ומיומנויות בתחום הבינה המלאכותית – אחד התחומים המשפיעים והמבוקשים ביותר בעולם התעסוקה של היום. מאחלים לך הצלחה רבה, סיפוק והתקדמות משמעותית לאורך הקורס ובבניית קריירה עדכנית ורלוונטית לשנים הבאות.
                     </p>
                   </div>
-                  <Button className="w-full" size="lg" asChild>
-                    <a href="mailto:rachelshor100@gmail.com?subject=רכישת קורס AI">
-                      אני רוצה להרשם
-                    </a>
+                  <Button 
+                    className="w-full" 
+                    size="lg"
+                    onClick={() => setShowDialog(true)}
+                  >
+                    אני רוצה להרשם
                   </Button>
                 </div>
               )}
@@ -156,6 +236,67 @@ export default function PaymentPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Dialog for email and referrer selection */}
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+        <DialogContent className="max-w-md" dir="rtl">
+          <DialogHeader>
+            <DialogTitle>בחר ממליץ וספק מייל</DialogTitle>
+            <DialogDescription>
+              אנא בחר את הממליץ שלך וספק מייל להעברת הקוד
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">ממליץ</label>
+              <Select value={selectedReferrer} onValueChange={setSelectedReferrer}>
+                <SelectTrigger>
+                  <SelectValue placeholder="בחר ממליץ" />
+                </SelectTrigger>
+                <SelectContent>
+                  {referrers.map((ref) => (
+                    <SelectItem key={ref.referralCode} value={ref.referralCode}>
+                      {ref.name} - {ref.referralCode}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">מייל</label>
+              <Input
+                type="email"
+                placeholder="your@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                dir="ltr"
+              />
+            </div>
+            {error && (
+              <Alert variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+            <div className="space-y-2">
+              <Button
+                className="w-full"
+                onClick={handleSubmit}
+                disabled={loading}
+              >
+                {loading ? "טוען..." : "המשך לתשלום"}
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => setShowDialog(false)}
+                disabled={loading}
+              >
+                ביטול
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

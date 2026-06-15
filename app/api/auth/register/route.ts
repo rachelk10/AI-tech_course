@@ -3,6 +3,8 @@ import { cookies } from "next/headers"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/prisma"
 import { REFERRAL_COOKIE_NAME, sanitizeReferralCode } from "@/lib/referrals"
+import { promises as fs } from "fs"
+import path from "path"
 
 const generateReferralCode = () => crypto.randomUUID().replace(/-/g, "").slice(0, 10).toUpperCase()
 
@@ -71,13 +73,20 @@ export async function POST(request: Request) {
       if (userReferrer && userReferrer.email.toLowerCase() !== email.toLowerCase()) {
         referredById = userReferrer.id
       } else {
-        const externalReferrer = await prisma.referrer.findUnique({
-          where: { referralCode },
-          select: { id: true },
-        })
-
-        if (externalReferrer) {
-          referredByReferrerId = externalReferrer.id
+        // Look for external referrers in local JSON file (no DB for external referrers)
+        // Note: Count increment moved to payment/confirm — only count when user actually pays
+        try {
+          const referrersPath = path.join(process.cwd(), "data", "referrers.json")
+          const raw = await fs.readFile(referrersPath, "utf-8")
+          const referrers = JSON.parse(raw) as Array<any>
+          const found = referrers.find(r => String(r.referralCode).toUpperCase() === String(referralCode).toUpperCase())
+          if (found) {
+            // Count increment moved to payment/confirm endpoint
+            // We don't have a DB id for external referrers; keep referredByReferrerId undefined
+          }
+        } catch (e) {
+          // If file not found or parsing failed, ignore and continue silently
+          console.warn("Could not read/write local referrers.json", e)
         }
       }
     }

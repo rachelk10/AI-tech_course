@@ -72,14 +72,12 @@ export default function PaymentPage() {
         throw new Error(errorData.error || "ההרשמה נכשלה")
       }
 
-      // 2. Confirm payment (increment referral count and save lead info)
+      // 2. Confirm payment (increment referral count)
       const paymentRes = await fetch("/api/payment/confirm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           referralCode: selectedReferrer,
-          email,
-          name: email.split("@")[0],
         }),
       })
 

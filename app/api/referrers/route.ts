@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server"
-import { REFERRAL_CODE_REGEX, sanitizeReferralCode } from "@/lib/referrals"
-import { promises as fs } from "fs"
-import path from "path"
+import { REFERRAL_CODE_REGEX, sanitizeReferralCode, readReferrersFile, writeReferrersFile } from "@/lib/referrals"
 
 const generateReferralCode = () => crypto.randomUUID().replace(/-/g, "").slice(0, 10).toUpperCase()
 
@@ -11,10 +9,8 @@ const createUniqueReferralCode = async (preferredCode?: string): Promise<string>
   // Check only in JSON file
   const readExternalCodes = async (): Promise<string[]> => {
     try {
-      const referrersPath = path.join(process.cwd(), "data", "referrers.json")
-      const raw = await fs.readFile(referrersPath, "utf-8")
-      const referrers = JSON.parse(raw) as Array<any>
-      return referrers.map(r => String(r.referralCode).toUpperCase())
+      const referrers = await readReferrersFile()
+      return referrers.map((r) => String(r.referralCode).toUpperCase())
     } catch (e) {
       return []
     }
@@ -41,9 +37,7 @@ const createUniqueReferralCode = async (preferredCode?: string): Promise<string>
 
 export async function GET() {
   try {
-    const referrersPath = path.join(process.cwd(), "data", "referrers.json")
-    const raw = await fs.readFile(referrersPath, "utf-8")
-    const referrers = JSON.parse(raw) as Array<any>
+    const referrers = await readReferrersFile()
     return NextResponse.json(referrers, { status: 200 })
   } catch (error) {
     // File may not exist yet
@@ -71,11 +65,9 @@ export async function POST(request: Request) {
     const referralCode = await createUniqueReferralCode(body.referralCode)
 
     // Save external referrer to local JSON file
-    const referrersPath = path.join(process.cwd(), "data", "referrers.json")
     let referrers: Array<any> = []
     try {
-      const raw = await fs.readFile(referrersPath, "utf-8")
-      referrers = JSON.parse(raw)
+      referrers = await readReferrersFile()
     } catch (e) {
       // file may not exist yet, will create
       referrers = []
@@ -92,8 +84,7 @@ export async function POST(request: Request) {
     }
 
     referrers.push(newRef)
-    await fs.mkdir(path.join(process.cwd(), "data"), { recursive: true })
-    await fs.writeFile(referrersPath, JSON.stringify(referrers, null, 2), "utf-8")
+    await writeReferrersFile(referrers)
 
     const origin = new URL(request.url).origin
 

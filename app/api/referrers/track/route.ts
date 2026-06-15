@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server"
-import { sanitizeReferralCode } from "@/lib/referrals"
-import { promises as fs } from "fs"
-import path from "path"
+import { sanitizeReferralCode, readReferrersFile, writeReferrersFile } from "@/lib/referrals"
 
 export async function POST(request: Request) {
   try {
@@ -20,11 +18,13 @@ export async function POST(request: Request) {
       .split(";")
       .map((part) => part.trim())
       .find((part) => part.startsWith("referral_code="))
-      ? sanitizeReferralCode(cookieHeader
-          .split(";")
-          .map((part) => part.trim())
-          .find((part) => part.startsWith("referral_code="))
-          ?.split("=")[1])
+      ? sanitizeReferralCode(
+          cookieHeader
+            .split(";")
+            .map((part) => part.trim())
+            .find((part) => part.startsWith("referral_code="))
+            ?.split("=")[1],
+        )
       : null
 
     const referralCode = referralCodeFromBody || referralCodeFromCookie
@@ -32,38 +32,36 @@ export async function POST(request: Request) {
     if (!name || !email) {
       return NextResponse.json(
         { error: "אנא מלאי שם ומייל" },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
     if (!referralCode) {
       return NextResponse.json(
         { error: "לא נמצא קוד הפניה" },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
-    const referrersPath = path.join(process.cwd(), "data", "referrers.json")
     let referrers: Array<any> = []
 
     try {
-      const raw = await fs.readFile(referrersPath, "utf-8")
-      referrers = JSON.parse(raw)
+      referrers = await readReferrersFile()
     } catch (e) {
       return NextResponse.json(
         { error: "לא נמצא קובץ ממליצים" },
-        { status: 404 }
+        { status: 404 },
       )
     }
 
     const found = referrers.find(
-      (ref) => String(ref.referralCode).toUpperCase() === String(referralCode).toUpperCase()
+      (ref) => String(ref.referralCode).toUpperCase() === String(referralCode).toUpperCase(),
     )
 
     if (!found) {
       return NextResponse.json(
         { error: "ממליץ לא נמצא עבור קוד הפניה זה" },
-        { status: 404 }
+        { status: 404 },
       )
     }
 
@@ -75,8 +73,7 @@ export async function POST(request: Request) {
       createdAt: new Date().toISOString(),
     })
 
-    await fs.mkdir(path.join(process.cwd(), "data"), { recursive: true })
-    await fs.writeFile(referrersPath, JSON.stringify(referrers, null, 2), "utf-8")
+    await writeReferrersFile(referrers)
 
     return NextResponse.json(
       {
@@ -90,7 +87,7 @@ export async function POST(request: Request) {
           email,
         },
       },
-      { status: 200 }
+      { status: 200 },
     )
   } catch (error) {
     const message = error instanceof Error ? error.message : "אירעה שגיאה בעדכון הממליץ"

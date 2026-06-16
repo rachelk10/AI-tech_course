@@ -2,7 +2,8 @@ import { NextResponse } from "next/server"
 import { cookies } from "next/headers"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import { REFERRAL_COOKIE_NAME, sanitizeReferralCode, readReferrersFile, writeReferrersFile } from "@/lib/referrals"
+import { REFERRAL_COOKIE_NAME, sanitizeReferralCode } from "@/lib/referral-utils"
+import { readReferrersFile, writeReferrersFile } from "@/lib/referrals"
 
 // API endpoint לאישור תשלום
 // בעתיד זה יהיה webhook מספק התשלום (Stripe, PayPal וכו')

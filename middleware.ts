@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
-import { REFERRAL_COOKIE_NAME, sanitizeReferralCode } from "@/lib/referrals"
+import { REFERRAL_COOKIE_NAME, sanitizeReferralCode } from "@/lib/referral-utils"
 // import { getToken } from "next-auth/jwt"
 
 // ⚠️ Authentication temporarily disabled for deployment

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { cookies } from "next/headers"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/prisma"
-import { REFERRAL_COOKIE_NAME, sanitizeReferralCode } from "@/lib/referrals"
+import { REFERRAL_COOKIE_NAME, sanitizeReferralCode } from "@/lib/referral-utils"
 import { promises as fs } from "fs"
 import path from "path"
 

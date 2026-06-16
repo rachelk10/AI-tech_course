@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
-import { sanitizeReferralCode, readReferrersFile, writeReferrersFile } from "@/lib/referrals"
+import { sanitizeReferralCode } from "@/lib/referral-utils"
+import { readReferrersFile, writeReferrersFile } from "@/lib/referrals"
 
 export async function POST(request: Request) {
   try {

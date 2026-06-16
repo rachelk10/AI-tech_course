@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
-import { REFERRAL_CODE_REGEX, sanitizeReferralCode, readReferrersFile, writeReferrersFile } from "@/lib/referrals"
+import { REFERRAL_CODE_REGEX, sanitizeReferralCode } from "@/lib/referral-utils"
+import { readReferrersFile, writeReferrersFile } from "@/lib/referrals"
 
 const generateReferralCode = () => crypto.randomUUID().replace(/-/g, "").slice(0, 10).toUpperCase()
 

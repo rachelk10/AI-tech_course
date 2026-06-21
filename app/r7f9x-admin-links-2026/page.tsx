@@ -2,8 +2,6 @@ import Link from "next/link"
 import { headers } from "next/headers"
 import { prisma } from "@/lib/prisma"
 import { ExternalReferrerForm } from "@/components/referrals/external-referrer-form"
-import { BatchReferrerForm } from "@/components/referrals/batch-referrer-form"
-import { readReferrersFile } from "@/lib/referrals"
 
 export const dynamic = "force-dynamic"
 
@@ -57,67 +55,53 @@ export default async function AdminLinksPage() {
   const baseUrl = `${protocol}://${host}`
 
   try {
-    // Try to use Prisma if available (may fail in file-only mode)
-    let users = []
-    try {
-      await ensureReferralCodesForExistingUsers()
+    await ensureReferralCodesForExistingUsers()
 
-      users = await prisma.user.findMany({
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          referralCode: true,
-          createdAt: true,
-          referredBy: {
-            select: {
-              name: true,
-              email: true,
-            },
-          },
-          referredByReferrer: {
-            select: {
-              name: true,
-              email: true,
-              referralCode: true,
-            },
-          },
-          _count: {
-            select: {
-              referrals: true,
-            },
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        referralCode: true,
+        createdAt: true,
+        referredBy: {
+          select: {
+            name: true,
+            email: true,
           },
         },
-        orderBy: { createdAt: "desc" },
-      })
-    } catch (e) {
-      // Prisma/DB not available — fallback to empty users list and continue
-      console.warn("Prisma not available or DB not synced — rendering admin links in file-only mode.", e)
-      users = []
-    }
+        referredByReferrer: {
+          select: {
+            name: true,
+            email: true,
+            referralCode: true,
+          },
+        },
+        _count: {
+          select: {
+            referrals: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    })
 
-    // Read external referrers from local JSON file (no DB)
-    let externalReferrers: Array<any> = []
-    try {
-      externalReferrers = await readReferrersFile()
-      // normalize fields to match Prisma shape used below
-      externalReferrers = externalReferrers.map((r) => ({
-        id: r.id ?? r.referralCode,
-        name: r.name,
-        email: r.email ?? null,
-        phone: r.phone ?? null,
-        referralCode: r.referralCode,
-        createdAt: r.createdAt ? new Date(r.createdAt).toISOString() : null,
-        _count: { referrals: Number(r.count || 0) },
-      }))
-      externalReferrers.sort((a, b) => {
-        if (!a.createdAt) return 1
-        if (!b.createdAt) return -1
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      })
-    } catch (e) {
-      externalReferrers = []
-    }
+    const externalReferrers = await prisma.referrer.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        referralCode: true,
+        createdAt: true,
+        _count: {
+          select: {
+            referrals: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    })
 
     return (
       <main className="min-h-screen bg-background p-6">
@@ -128,7 +112,7 @@ export default async function AdminLinksPage() {
               כאן אפשר ליצור לינקים גם לממליצות לא רשומות, ולראות מי המליץ על מי.
             </p>
             <p className="text-sm text-muted-foreground">
-              דוגמת לינק: <code>{`${baseUrl}/?ref=XXXXXXXXXX`}</code>
+              דוגמת לינק: <code>{`${baseUrl}/auth/signup?ref=XXXXXXXXXX`}</code>
             </p>
             <div className="pt-2">
               <Link href="/" className="text-sm underline">
@@ -137,10 +121,7 @@ export default async function AdminLinksPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <ExternalReferrerForm />
-            <BatchReferrerForm />
-          </div>
+          <ExternalReferrerForm />
 
           <div className="overflow-x-auto rounded-xl border">
             <table className="w-full min-w-[1000px] text-right text-sm">
@@ -157,7 +138,7 @@ export default async function AdminLinksPage() {
               </thead>
               <tbody>
                 {externalReferrers.map((referrer) => {
-                  const referralLink = `${baseUrl}/?ref=${referrer.referralCode}`
+                  const referralLink = `${baseUrl}/auth/signup?ref=${referrer.referralCode}`
 
                   return (
                     <tr key={referrer.id} className="border-t align-top">

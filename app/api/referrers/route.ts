@@ -1,49 +1,38 @@
 import { NextResponse } from "next/server"
-import { REFERRAL_CODE_REGEX, sanitizeReferralCode } from "@/lib/referral-utils"
-import { readReferrersFile, writeReferrersFile } from "@/lib/referrals"
+import { prisma } from "@/lib/prisma"
+import { REFERRAL_CODE_REGEX, sanitizeReferralCode } from "@/lib/referrals"
 
 const generateReferralCode = () => crypto.randomUUID().replace(/-/g, "").slice(0, 10).toUpperCase()
 
 const createUniqueReferralCode = async (preferredCode?: string): Promise<string> => {
   const normalizedPreferred = sanitizeReferralCode(preferredCode)?.toUpperCase()
 
-  // Check only in JSON file
-  const readExternalCodes = async (): Promise<string[]> => {
-    try {
-      const referrers = await readReferrersFile()
-      return referrers.map((r) => String(r.referralCode).toUpperCase())
-    } catch (e) {
-      return []
-    }
-  }
-
   if (normalizedPreferred && REFERRAL_CODE_REGEX.test(normalizedPreferred)) {
-    const existingCodes = await readExternalCodes()
-    if (!existingCodes.includes(normalizedPreferred)) {
+    const [userExists, externalExists] = await Promise.all([
+      prisma.user.findUnique({ where: { referralCode: normalizedPreferred }, select: { id: true } }),
+      prisma.referrer.findUnique({ where: { referralCode: normalizedPreferred }, select: { id: true } }),
+    ])
+
+    if (!userExists && !externalExists) {
       return normalizedPreferred
     }
+
     throw new Error("קוד ההפניה הזה כבר קיים. נסי קוד אחר.")
   }
 
   for (let attempt = 0; attempt < 12; attempt += 1) {
     const code = generateReferralCode()
-    const existingCodes = await readExternalCodes()
-    if (!existingCodes.includes(code)) {
+    const [userExists, externalExists] = await Promise.all([
+      prisma.user.findUnique({ where: { referralCode: code }, select: { id: true } }),
+      prisma.referrer.findUnique({ where: { referralCode: code }, select: { id: true } }),
+    ])
+
+    if (!userExists && !externalExists) {
       return code
     }
   }
 
   throw new Error("לא הצלחנו ליצור קוד ייחודי כרגע. נסי שוב.")
-}
-
-export async function GET() {
-  try {
-    const referrers = await readReferrersFile()
-    return NextResponse.json(referrers, { status: 200 })
-  } catch (error) {
-    // File may not exist yet
-    return NextResponse.json([], { status: 200 })
-  }
 }
 
 export async function POST(request: Request) {
@@ -65,39 +54,26 @@ export async function POST(request: Request) {
 
     const referralCode = await createUniqueReferralCode(body.referralCode)
 
-    // Save external referrer to local JSON file
-    let referrers: Array<any> = []
-    try {
-      referrers = await readReferrersFile()
-    } catch (e) {
-      // file may not exist yet, will create
-      referrers = []
-    }
-
-    const newRef = {
-      id: referralCode,
-      name,
-      email,
-      phone,
-      referralCode,
-      count: 0,
-      createdAt: new Date().toISOString(),
-    }
-
-    referrers.push(newRef)
-    await writeReferrersFile(referrers)
+    const referrer = await prisma.referrer.create({
+      data: {
+        name,
+        email,
+        phone,
+        referralCode,
+      },
+    })
 
     const origin = new URL(request.url).origin
 
     return NextResponse.json(
       {
         referrer: {
-          id: newRef.id,
-          name: newRef.name,
-          email: newRef.email,
-          phone: newRef.phone,
-          referralCode: newRef.referralCode,
-          referralLink: `${origin}/?ref=${newRef.referralCode}`,
+          id: referrer.id,
+          name: referrer.name,
+          email: referrer.email,
+          phone: referrer.phone,
+          referralCode: referrer.referralCode,
+          referralLink: `${origin}/auth/signup?ref=${referrer.referralCode}`,
         },
       },
       { status: 201 },

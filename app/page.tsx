@@ -153,50 +153,11 @@ export default function HomePage() {
   const [newsletterFeedback, setNewsletterFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null)
   const [termsAccepted, setTermsAccepted] = useState(false)
   const [showWelcomeText, setShowWelcomeText] = useState(false)
-  const [showRegisterDialog, setShowRegisterDialog] = useState(false)
-  const [registerName, setRegisterName] = useState("")
-  const [registerEmail, setRegisterEmail] = useState("")
-  const [registerError, setRegisterError] = useState("")
-  const [registerLoading, setRegisterLoading] = useState(false)
 
   const toggleModule = (moduleId: number) => {
     setOpenModules((prev) =>
       prev.includes(moduleId) ? prev.filter((id) => id !== moduleId) : [...prev, moduleId]
     )
-  }
-
-  const handleRegisterSubmit = async () => {
-    setRegisterError("")
-
-    if (!registerName.trim() || !registerEmail.trim()) {
-      setRegisterError("אנא מלאי שם ומייל לפני המעבר לתשלום.")
-      return
-    }
-
-    setRegisterLoading(true)
-
-    try {
-      const response = await fetch("/api/referrers/track", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: registerName,
-          email: registerEmail,
-        }),
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || "אירעה שגיאה בעדכון הממליצה")
-      }
-
-      window.location.href = "https://pay.sumit.co.il/vunqpb/vwedot/vwedou/payment/"
-    } catch (error) {
-      setRegisterError((error as Error).message)
-    } finally {
-      setRegisterLoading(false)
-    }
   }
 
   const handleChapterClick = (chapterTitle: string) => {
@@ -712,79 +673,18 @@ export default function HomePage() {
                     תודה שבחרת להצטרף אלינו. אנו שמחים ללוות אותך בדרך לרכישת ידע ומיומנויות בתחום הבינה המלאכותית – אחד התחומים המשפיעים והמבוקשים ביותר בעולם התעסוקה של היום. מאחלים לך הצלחה רבה, סיפוק והתקדמות משמעותית לאורך הקורס ובבניית קריירה עדכנית ורלוונטית לשנים הבאות.
                   </p>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setRegisterName("")
-                    setRegisterEmail("")
-                    setRegisterError("")
-                    setShowRegisterDialog(true)
-                  }}
+                <a
+                  href="https://pay.sumit.co.il/vunqpb/vwedot/vwedou/payment/"
                   className="inline-flex items-center justify-center gap-3 w-full px-8 py-5 rounded-2xl text-lg font-bold text-white bg-gradient-to-r from-[var(--gradient-purple)] via-[var(--gradient-blue)] to-[var(--gradient-pink)] shadow-[0_12px_32px_-12px_rgba(88,28,62,0.7)] hover:scale-105 transition-transform duration-300"
                 >
                   אני רוצה להרשם
                   <ArrowLeft className="w-5 h-5" />
-                </button>
+                </a>
               </div>
             )}
           </div>
         </div>
       </section>
-
-      <Dialog open={showRegisterDialog} onOpenChange={setShowRegisterDialog}>
-        <DialogContent className="max-w-md" dir="rtl">
-          <DialogHeader>
-            <DialogTitle>השאירי שם ומייל</DialogTitle>
-            <DialogDescription>
-              לאחר מכן נעביר אותך לעמוד התשלום.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">שם מלא</label>
-              <input
-                type="text"
-                value={registerName}
-                onChange={(e) => setRegisterName(e.target.value)}
-                className="w-full rounded-xl border border-input bg-background px-4 py-3 text-base outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-                placeholder="שם מלא"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">מייל</label>
-              <input
-                type="email"
-                value={registerEmail}
-                onChange={(e) => setRegisterEmail(e.target.value)}
-                className="w-full rounded-xl border border-input bg-background px-4 py-3 text-base outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-                placeholder="your@email.com"
-              />
-            </div>
-            {registerError && (
-              <div className="rounded-xl border border-red-300 bg-red-50 p-4 text-sm text-red-700">
-                {registerError}
-              </div>
-            )}
-            <div className="space-y-2">
-              <Button
-                className="w-full"
-                onClick={handleRegisterSubmit}
-                disabled={registerLoading}
-              >
-                {registerLoading ? "טוען..." : "אישור ועבור לתשלום"}
-              </Button>
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => setShowRegisterDialog(false)}
-                disabled={registerLoading}
-              >
-                ביטול
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       {/* ───── Contact Details + Question Form Section ───── */}
       <section id="contact" className="scroll-mt-[calc(8.75rem-1cm)] px-6 py-16 md:scroll-mt-[calc(11.75rem-1cm)]">

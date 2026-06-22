@@ -73,7 +73,7 @@ export function ProtectedContent({
         <AlertDescription className="mt-2 space-y-3">
           <p>כדי לצפות בתוכן זה, יש לרכוש את הקורס</p>
           <Button asChild size="sm">
-            <Link href="/payment">רכישת הקורס</Link>
+            <Link href="/#payment">רכישת הקורס</Link>
           </Button>
         </AlertDescription>
       </Alert>

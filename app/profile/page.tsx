@@ -113,7 +113,7 @@ export default function ProfilePage() {
                   כדי לקבל גישה מלאה לכל תכני הקורס, יש לבצע תשלום
                 </p>
                 <Button asChild className="w-full">
-                  <Link href="/payment">רכישת הקורס</Link>
+                  <Link href="/#payment">רכישת הקורס</Link>
                 </Button>
               </div>
             )}

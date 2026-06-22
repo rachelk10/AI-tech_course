@@ -80,7 +80,7 @@ export function AuthButtons() {
           </DropdownMenuItem>
           {!session.user.hasPaid && (
             <DropdownMenuItem asChild>
-              <Link href="/payment" className="cursor-pointer">
+              <Link href="/#payment" className="cursor-pointer">
                 <CreditCard className="ml-2 h-4 w-4" />
                 <span>רכישת הקורס</span>
               </Link>

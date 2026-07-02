@@ -164,7 +164,7 @@ export default async function AdminLinksPage() {
                   <th className="px-3 py-2">מייל</th>
                   <th className="px-3 py-2">קוד הפניה אישי</th>
                   <th className="px-3 py-2">לינק שיתוף</th>
-                  <th className="px-3 py-2">הומלץ ע\"י</th>
+                  <th className="px-3 py-2">הומלץ ע&quot;י</th>
                   <th className="px-3 py-2">כמה הביאה</th>
                   <th className="px-3 py-2">תאריך הרשמה</th>
                 </tr>

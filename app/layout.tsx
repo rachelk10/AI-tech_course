@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Heebo, Secular_One, Space_Grotesk } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { AuthProvider } from '@/components/auth-provider'
+import { CourseChatWidget } from '@/components/course-chat-widget'
 import './globals.css'
 
 const assistant = Heebo({ 
@@ -39,6 +40,7 @@ export default function RootLayout({
       <body className={`${assistant.variable} ${displayFont.variable} ${spaceGrotesk.variable} font-sans antialiased`}>
         <AuthProvider>
           {children}
+          <CourseChatWidget />
           {process.env.NODE_ENV === 'production' && <Analytics />}
         </AuthProvider>
       </body>
